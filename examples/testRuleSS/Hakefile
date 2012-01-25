@@ -1,0 +1,21 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+targets = [ "hello", "good-bye" ]
+
+hake_tree = [
+
+   dflt	targets
+ ,
+   ruleSS "" ".o" $ \t (s:_) -> [ (".c",  [ [ "gcc", s, "-o", t ] ] ) ,
+                                  (".cc", [ [ "g++", s, "-o", t ] ] ) ]
+ ,
+   rule   ".o" ".c" $ \_ (s:_) -> [ [ "gcc", "-c", s ] ]
+ ,
+   rule   ".o" ".cc" $ \_ (s:_) -> [ [ "g++", "-c", s ] ]
+ ,
+   task   "clean" [ [ "rm", "-f", "hello.o", "good-bye.o" ] ++ targets ]
+
+ ]
+
+main = hake hake_tree

@@ -1,0 +1,15 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+
+bins = [ "disp", "trac", "plot" ]
+
+main = hake [
+
+ rule "" ".c" $ \t (s:_) -> rawSystemE [ "cc", "-o", t, s ]
+ ,
+ file [ "stripsync" ] bins $ \t -> do
+   newers <- getNewers t bins
+   rawSystemE $ [ "strip" ] ++ newers
+   rawSystemE   [ "touch", t ]
+
+ ]

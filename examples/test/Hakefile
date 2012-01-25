@@ -1,0 +1,33 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+hake_tree = [
+
+   dflt	[ "greeting" ]
+ ,
+   file	[ "greeting", "greeting.log" ]
+        [ "hello.mo", "good-bye.mo", "kill-you.mm", "some.mo" ] $
+	const [ ["./linker_model.lhs", "-o", "greeting", "hello.mo",
+	                                     "good-bye.mo", "kill-you.mm",
+					     "some.mo"] ]
+ ,
+   rule	".mm" ".mcc" $
+		\t (s:_) -> [ [ "./compiler_model.lhs", s, "-o", t ] ]
+ ,
+   base	(isSuffixOf ".mo") (\dst -> [ changeSuffix ".mo" ".mc" dst ]) $
+		\_ [ src ] l _ -> do (putStrLn src) >> print l >> return ExitSuccess
+		                     rawSystemE $ [ "./compiler_model.lhs", src]
+ ,
+   rule ".mo" ".md" $ \t (s:_) -> [ [ "./compiler_model.lhs", s, "-o", t ] ]
+ ,
+   rule "" ".pp" $ \_ (s:_) -> [ [ "./pp_model.lhs", s ] ]
+ ,
+   task	"clean" [ [ "rm", "-f", "kill-you.mm", "some.mo", "good-bye.mo",
+                                "hello.mo", "greeting", "greeting.log",
+				"hello.mc", "some.md" ] ]
+ ,
+   mkfl "some.md" [ "this is some", "some some some", "some other some" ]
+
+ ]
+
+main = hake hake_tree

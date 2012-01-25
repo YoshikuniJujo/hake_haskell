@@ -1,0 +1,19 @@
+[*] ruleV を作ろう、いや、ruleS としようか。
+    それよりも、rule が複数の suffix を取れるようにするか。
+[*] [ String -> Bool ] を String -> Bool にする
+[*] [ IO a ] を IO a にしよう。
+[ ] refactoring
+[ ] documentation
+[*] 上2つのあとに1.0にするか。
+[ ] exit code が 0 でなかったときの挙動について
+[*] -f オプションをつくる
+[*] web page で、あとは getVals とか、hakefileIs とか
+[*] web page で、さらに getNewers とか、FunSetIO とか、
+[*] web page で、getNewers と FunSetIO を紹介するときは、ar の例を使おうか。
+[ ] web page で、掲示板を作らなくては、とりあえず Perl を。
+[*] upload する前に、yjtools 0.9.7 を upload すること。
+
+[ ] web page で、-f option とかかな。
+[ ] base の説明も。
+
+[ ] FunSet 内の関数を base を使って定義するようにしよう。

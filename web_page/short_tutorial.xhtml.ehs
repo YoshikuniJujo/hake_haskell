@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import System.Time (getClockTime) %%>
+<%% import Text.RegexPR (gsubRegexPR, getbrsRegexPR) %%>
+<%% import Variables %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>short tutorial</title></head>
+<body>
+<h1>Short tutorial for hake</h1>
+<p>updated at <%==$ getClockTime %></p>
+<p>I'm sorry. My English is bad.</p>
+
+<h2>contents</h2>
+<h3>0. <a href="#first_of_all">first of all</a></h3>
+<h3>1. <a href="short_tutorial/first_sample.xhtml">first sample</a></h3>
+<p>1.1. prepare for first sample</p>
+<p>1.2. write Hakefile and run hake</p>
+<h3>2. <a href="short_tutorial/use_rule.xhtml">use rule sample</a></h3>
+<p>2.1. use rule</p>
+<p>2.2. sample</p>
+<p>2.3. FunSetRaw</p>
+<p>2.4. try</p>
+<h3>3. <a href="short_tutorial/use_default.xhtml">use default sample</a></h3>
+<p>3.1. dflt function</p>
+<p>3.2. try</p>
+<h3>4. <a href="short_tutorial/use_addDeps.xhtml">use addDeps sample</a></h3>
+<p>4.1. addDeps function</p>
+<p>4.2. try</p>
+<h3>5. <a href="short_tutorial/use_ruleSS.xhtml">use ruleSS sample</a></h3>
+<p>5.1. ruleSS function</p>
+<p>5.2. try</p>
+<h3>6. <a href="short_tutorial/use_ruleV.xhtml">use ruleV sample</a></h3>
+<p>6.1. ruleV function</p>
+<p>6.2. try</p>
+<h3>7. <a href="short_tutorial/use_getVals.xhtml">use getVals sample</a></h3>
+<p>7.1. getVals function</p>
+<p>7.2. try</p>
+<h3>8. <a href="short_tutorial/file_again.xhtml">file again</a></h3>
+<p>8.1. file function</p>
+<p>8.2. try</p>
+<h3>9. <a href="short_tutorial/use_getNewers.xhtml">use getNewers</a></h3>
+<p>9.1. FunSetIO</p>
+<p>9.2. getNewers function</p>
+<p>9.3. try</p>
+<h3>10. <a href="short_tutorial/use_module.xhtml">use module</a></h3>
+<p>10.1. files</p>
+<p>10.2. try</p>
+<h3>11. <a href="short_tutorial/use_hakefileIs.xhtml">use hakefileIs</a></h3>
+<p>11.1. hakefileIs function</p>
+<p>11.2. try</p>
+<p>11.3. and something</p>
+<h3>12. <a href="short_tutorial/use_delRules.xhtml">use delRules</a></h3>
+<p>12.1. delRules function</p>
+<p>12.2. try</p>
+<h3>13. <a href="short_tutorial/use_f_option.xhtml">use -f option</a></h3>
+<p>13.1. files</p>
+<p>13.2. try</p>
+
+<h2>0. <a id="first_of_all">first of all</a></h2>
+<p>Please get and install hake by your favorite way.</p>
+<p>If your distribution doesn't have package of hake, you should use cabal directly.</p>
+<p>If installing succeed, you can done following command.</p>
+<pre><code>&gt; hake --version
+hake <%== fmap ((!!1) . getbrsRegexPR "my_home_version:\\s*(.*)") $ readFile "versions_file" %></code></pre>
+
+</body>
+</html>

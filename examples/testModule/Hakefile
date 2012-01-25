@@ -1,0 +1,8 @@
+import Module1
+import Module2(var2)
+import Module2 (var3)
+
+main = do
+  putStrLn var1
+  putStrLn var2
+  putStrLn var3

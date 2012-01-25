@@ -1,0 +1,8 @@
+import Development.Hake
+import Development.Hake.FunSet
+
+main = hake [
+
+ rule "" ".c" $ \t (s:_) -> [ "cc -o " ++ t ++ " " ++ s ]
+
+ ]

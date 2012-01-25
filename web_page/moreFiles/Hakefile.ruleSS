@@ -1,0 +1,19 @@
+import Development.Hake
+import Development.Hake.FunSet
+
+rules = [
+
+ dflt [ "hello" ]
+ ,
+ rule ".o" ".c" $ \_ [s] -> [ [ "gcc", "-c", s ] ]
+ ,
+ rule ".o" ".cc" $ \_ [s] -> [ [ "g++", "-c", s ] ]
+ ,
+ ruleSS "" ".o" $ \t (s:_) -> [ (".c",  [ "gcc", s, "-o", t ] ) ,
+                                (".cc", [ "g++", s, "-o", t ] ) ]
+ ,
+ task "clean" [ [ "rm", "-f" "hello.o", "hello" ] ]
+
+ ]
+
+main = hake rules

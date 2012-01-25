@@ -1,0 +1,21 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+import System.Directory (setCurrentDirectory)
+
+main = hake $ [
+
+ task "final_build" $ do
+   setCurrentDirectory "trac"
+   rawSystemE [ "hake", "trac" ]
+ ,
+ task "test_build" $ do
+   setCurrentDirectory "full_test"
+   rawSystemE [ "hake", "full_test" ]
+ ,
+ task "clean" $ do
+   setCurrentDirectory "trac"
+   rawSystemE [ "hake", "clean" ]
+   setCurrentDirectory "../full_test"
+   rawSystemE [ "hake", "clean" ]
+
+ ]

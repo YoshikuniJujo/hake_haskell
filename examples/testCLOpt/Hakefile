@@ -1,0 +1,22 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import System.Environment  (getArgs)
+import Control.Applicative ((<$>))
+import Data.Maybe          (maybeToList)
+
+target = "hello"
+
+main = do
+  cflags <- getVals "cflags" <$> getArgs
+
+  hake [
+
+   dflt [ target ]
+   ,
+   rule ".o" ".c" $ \_ (s:_) -> [ [ "cc" ] ++ cflags ++ [ "-c", s ] ]
+   ,
+   rule "" ".o" $ \t s -> [ [ "cc", "-o", t ] ++ s ]
+   ,
+   task "clean" [ [ "rm", "-f", target, target ++ ".o" ] ]
+
+   ]

@@ -1,0 +1,11 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+main = hake [
+
+ file [ "hello", "greeting" ] [ "hello.c" ] $ \t (s:_) ->
+   [ [ "gcc", "-o", t, s ] ]
+ ,
+ task "clean" [ [ "rm", "-f", "hello", "greeting" ] ]
+
+ ]

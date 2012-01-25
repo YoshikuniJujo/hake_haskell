@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>4. use addDeps</title></head>
+<body>
+<h1>use addDeps</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>4.1. addDeps function</h2>
+<pre><code>&gt; ls
+hello.c sayHello.c Hakefile</code></pre>
+<%== catHakefile "use_addDeps" %>
+
+<h2>4.2. try</h2>
+<pre><code>&gt; hake
+cc -c sayHello.c
+cc -c hello.c
+cc -o hello hello.o sayHello.o
+</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+files = [ "menus", "hash", "store" ]
+
+main = hake [
+
+ setCmd
+   (file [ "new_spec", "new_impl" ] files $ const []) $
+     \t _ _ -> do newers <- getNewers t files
+                  systemE $ "date >> " ++ t
+	          systemE $ "ls " ++ unwords newers ++ " >> " ++ t
+ ,
+ file [ "some", "another" ] [ "someAnotherGen" ] $ \t -> [ [ "touch", t ] ]
+ ,
+ task "clean" [ [ "rm", "-f", "some", "another", "new_spec", "new_impl" ] ]
+
+ ]

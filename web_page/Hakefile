@@ -1,0 +1,110 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+import Text.RegexPR  (matchRegexPR)
+import Data.Maybe    (fromJust)
+import System.IO     (stdout, hFlush)
+import System.Cmd    (rawSystem)
+import Data.IORef    (IORef, newIORef, writeIORef, readIORef)
+import Control.Monad (unless)
+import System.Directory (setCurrentDirectory)
+
+getV :: String -> String -> String
+getV k = fromJust . lookup 1 . snd . fromJust . matchRegexPR (k ++ "\\s*:\\s*(.+)")
+
+targets :: [ String ]
+targets = [ "index.xhtml", hakefileExamplesXhtml, "short_tutorial.xhtml" ]
+
+hakefileExamplesXhtml = "hakefile_examples.xhtml"
+
+hakefileExamplesXhtmlMoreFile :: [ String ]
+hakefileExamplesXhtmlMoreFile = [
+ "Hakefile.simple", "Hakefile.ruleSS", "Hakefile.addDeps",
+ "Hakefile.hakefileIs"
+ ]
+
+hakeSrc = "../dist/hake-1.2.tar.gz"
+
+moreFile :: [ String ]
+moreFile = hakefileExamplesXhtmlMoreFile
+
+main :: IO ()
+main = do
+  addrs    <- readFile "../address_file"
+  let address   = getV "address" addrs
+      directory = getV "document_directory" addrs
+      user_name = getV "user" addrs
+  password <- newIORef Nothing
+  hake $ [
+
+   dflt targets
+   ,
+   rule "" ".ehs" $ \t (s:_) -> rawSystemE [ "ehs", s, "-o", t ]
+   ,
+   file [ "upload" ] [ "upload_index", "upload_others", "upload_short_tutorial" ] $ const2 $ do
+     rawSystemE [ "touch", "upload_done" ]
+   ,
+   file [ "upload_index" ] targets $ const2 $ do
+     newers <- getNewers "upload_done" targets
+     if (null newers)
+        then return ExitSuccess
+	else do
+          psswd <- getIfNothing password
+	  mapM (\f -> do
+	    putStrLn $ "uploading " ++ f
+	    rawSystem "yjftp"
+	      [ "put", f, address ++ directory, user_name, "-p", psswd ]) newers
+	  return ExitSuccess
+   ,
+   file [ "upload_others" ] (map ("moreFiles/"++) moreFile ++ [hakeSrc]) $ const2 $ do
+     newers <- getNewers "upload_done" $ map ("moreFiles/"++) moreFile ++ [ hakeSrc ]
+     if null newers
+        then return ExitSuccess
+	else do
+          psswd  <- getIfNothing password
+          mapM (\f -> do
+              putStrLn $ "uploading " ++ f
+              rawSystem
+                "yjftp" ["put", f     , address ++ directory, user_name, "-p", psswd ])
+            newers
+          return ExitSuccess
+   ,
+   task "upload_short_tutorial" $ do
+     setCurrentDirectory "short_tutorial/"
+     putStrLn "cd short_tutorial/"
+     ec <- rawSystemE [ "hake", "upload" ]
+     setCurrentDirectory "../"
+     putStrLn "cd ../"
+     return ec
+   ,
+   task "test" $ do putStrLn $ getV "address" addrs
+                    putStrLn $ getV "document_directory" addrs
+                    return ExitSuccess
+
+   ] `addDeps` [
+
+   ("index.xhtml", [hakeSrc] ++ ["versions_file"])
+   ,
+   (hakefileExamplesXhtml, map ("moreFiles/" ++) hakefileExamplesXhtmlMoreFile)
+   ,
+   ("short_tutorial.xhtml", ["versions_file"])
+
+   ]
+
+getPsswd :: IO String
+getPsswd = do
+  putStr "Passwd: "
+  hFlush stdout
+  rawSystem "stty" [ "-echo" ]
+  pass <- getLine
+  rawSystem "stty" [ "echo" ]
+  putStrLn ""
+  return pass
+
+getIfNothing :: IORef (Maybe String) -> IO String
+getIfNothing pss = do
+  c <- readIORef pss
+  case c of
+    Just p  -> return p
+    Nothing -> do p <- getPsswd
+                  writeIORef pss $ Just p
+		  return p

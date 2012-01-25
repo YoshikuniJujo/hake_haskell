@@ -1,0 +1,58 @@
+<% cgiPage -%>BBS about hake<%--%>
+
+<%% import EhsTools %%>
+<%% import System.Time(getClockTime) %%>
+
+<p>modified at <%==$ getClockTime %></p>
+
+<form method="post" action="bbs.pl">
+<p>name : <input type="text" name="user"/>
+<p><textarea rows="5" cols="40" name="tips"></textarea></p>
+<p><input type="submit" value="send"/></p>
+</form>
+
+<p><img align="right" src="http://hpcgi3.nifty.com/salamander/first/pictures/powered_by.pl"/></p>
+<hr/>
+
+<%--%>
+
+$ENV{REQUEST_URI} =~ /\/([^\/\.]+)[^\/]*$/;
+$filename = $1 . ".txt";
+
+sub input2str {
+
+  $str = $_[0];
+  $str =~ s/.+?=//;
+  $str =~ s/%(..)/chr hex $1/ge;
+  $str =~ s/\+/ /g;
+  $str =~ s/\r\n/<br\/>/g;
+  return $str;
+
+}
+
+if ($ENV{CONTENT_LENGTH} != 0) {
+
+  <> =~ /(.+)&(.+)/;
+  $date = `LANG=C date`;
+  $name = input2str($1);
+  $cont = $2;
+
+  open CONT, ">>" . $filename;
+  flock CONT, 2;
+  if ($cont =~ /%3C/) {
+    print CONT "<p>", $date, $name, "</p><p>You should use &amp;lt;.</p>";
+  } elsif ($cont =~ /http/) {
+    print CONT "<p>", $date, $name, "</p><p>You can't write 'http'.</p>";
+  } else {
+    print CONT "<p>", $date, $name, "</p>\n<p>", input2str($cont), "</p>\n";
+  }
+  close CONT;
+
+}
+
+open CONT, $filename;
+flock CONT, 1;
+print <CONT>;
+close CONT;
+
+<%-%>

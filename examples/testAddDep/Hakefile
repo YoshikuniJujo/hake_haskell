@@ -1,0 +1,27 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+targets = [ "hello", "good-bye" ]
+moduleH = [ "hm" ]
+
+main = hake $ [
+ dflt targets
+ ,
+ ruleSS "" ".o" $ \t ss -> [ (".c",  [ ["gcc"] ++ ss ++ ["-o", t] ]),
+                             (".cc", [ ["g++"] ++ ss ++ ["-o", t] ]) ]
+ ,
+ rule ".o" ".c"  $ \_ (s:_) -> [ [ "gcc", "-c", s ] ]
+ ,
+ rule ".o" ".cc" $ \_ (s:_) -> [ [ "g++", "-c", s ] ]
+ ,
+ task "clean" [ [ "rm", "-f" ] ++ map (++".o") targets ++ targets ++ map (++".o") moduleH ]
+
+ ] `addDeps` [
+
+ ( "hello", map (++".o") moduleH )
+
+ ] `delRules` [
+
+ ( "hm", [ "hm.o" ] )
+
+ ]

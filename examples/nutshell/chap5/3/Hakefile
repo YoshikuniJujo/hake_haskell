@@ -1,0 +1,25 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import System.Process (readProcess)
+import Text.RegexPR   (matchRegexPR)
+import Data.Maybe     (fromJust)
+
+main = do
+  hake [
+
+   dflt [ "a.out" ]
+   ,
+   file [ "a.out" ] [ "hello.c" ] $ const [ [ "cc", "hello.c" ] ]
+
+   ]
+  ret <- readProcess "file" [ "a.out" ] ""
+  let ftype = fromJust $ lookup 1 $ snd $ fromJust $ matchRegexPR ".+:\\s+([^,]+)" ret
+  hake [
+
+   dflt [ "sys", "conv" ]
+   ,
+   task "sys" [ [ "true", "Building", "sys", "with", "file", "type", ftype ] ]
+   ,
+   task "conv" [ [ "true", "Building", "conv", "with", "file", "type", ftype ] ]
+
+   ]

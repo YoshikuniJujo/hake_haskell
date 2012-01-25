@@ -1,0 +1,1 @@
+hake -f trac.hk full_test

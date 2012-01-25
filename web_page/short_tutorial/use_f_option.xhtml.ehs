@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables   %%>
+<%% import System.Time %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use -f option</title></head>
+<body>
+
+<h1>13. use -f option</h1>
+<p>updated at <%==$ getClockTime %></p>
+<p>You can use your favorite file as Hakefile.</p>
+
+<h2>13.1. files</h2>
+<pre><code>&gt; ls
+hello.c myHakefile.hs</code></pre>
+<%== catFile "myHakefile.hs" "use_f_option" %>
+
+<h2>13.2. try</h2>
+<pre><code>&gt; hake -f myHakefile.hs
+cc -o hello hello.c</code></pre>
+
+</body>
+</html>

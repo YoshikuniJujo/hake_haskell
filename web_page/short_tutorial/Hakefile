@@ -1,0 +1,111 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+import Text.RegexPR  (getbrsRegexPR)
+import Data.Maybe    (fromJust)
+import System.IO     (stdout, hFlush)
+import System.Cmd    (rawSystem)
+import Data.IORef    (IORef, newIORef, writeIORef, readIORef)
+import Control.Monad (unless)
+import System.Directory (copyFile)
+import System.IO.Unsafe
+import HakeModule
+
+copyFileRuleList :: [ Rule ]
+copyFileRuleList = map (uncurry copyFileRule . mkCopyPairOf) moreFile
+--                ++ map (uncurry copyFileRule . mkCopyPairOf) moreMoreFile
+
+mkCopyPairOf :: String -> (String, String)
+mkCopyPairOf fn
+  = let ret = (fn, "../samples/" ++ getSecondBrReg "(.+?)_(.+)" fn ++ "/" ++ getFirstBrReg "(.+?)_(.+)" fn)
+     in unsafePerformIO $ do
+--          print ret
+	  return ret
+
+mkCopyPairOfHakefile :: String -> (String, String)
+mkCopyPairOfHakefile hfn
+  = (hfn, "../samples/" ++ getFirstBrReg "Hakefile_(.+)" hfn ++ "/Hakefile")
+
+main :: IO ()
+main = do
+  addrs    <- readFile "../../address_file"
+  let address   = getV "address" addrs
+      directory = getV "document_directory" addrs
+      user_name = getV "user" addrs
+  password <- newIORef Nothing
+  hake $ ([
+
+   dflt targets
+   ,
+   copyFileRule "Variables.hs" "../Variables.hs"
+   ,
+   rule "" ".ehs" $ \t (s:_) -> rawSystemE [ "ehs", s, "-o", t ]
+   ,
+   file [ "upload" ] [ "upload_index", "upload_others" ] $ const2 $ do
+     rawSystemE [ "touch", "upload_done" ]
+   ,
+   file [ "upload_index" ] targets $ const2 $ do
+     newers <- getNewers "upload_done" targets
+     if (null newers)
+        then return ExitSuccess
+	else do
+          psswd <- getIfNothing password
+	  mapM (\f -> do
+	    putStrLn $ "uploading " ++ f
+	    rawSystem "yjftp"
+	      [ "put", f, address ++ directory ++ "/short_tutorial", user_name, "-p", psswd ]) newers
+	  return ExitSuccess
+   ,
+   file [ "upload_others" ] moreFile $ const2 $ do
+     newers <- getNewers "upload_done" moreFile
+     if null newers
+        then return ExitSuccess
+	else do
+          psswd  <- getIfNothing password
+          mapM (\f -> do
+              putStrLn $ "uploading " ++ f
+              rawSystem
+                "yjftp" ["put", f     , address ++ directory ++ "/Hakefile_samples", user_name, "-p", psswd ])
+            newers
+          return ExitSuccess
+   ,
+   task "test" $ do putStrLn $ getV "address" addrs
+                    putStrLn $ getV "document_directory" addrs
+                    return ExitSuccess ] ++
+   copyFileRuleList) `addDeps` deps
+   
+getPsswd :: IO String
+getPsswd = do
+  putStr "Passwd: "
+  hFlush stdout
+  rawSystem "stty" [ "-echo" ]
+  pass <- getLine
+  rawSystem "stty" [ "echo" ]
+  putStrLn ""
+  return pass
+
+getIfNothing :: IORef (Maybe String) -> IO String
+getIfNothing pss = do
+  c <- readIORef pss
+  case c of
+    Just p  -> return p
+    Nothing -> do p <- getPsswd
+                  writeIORef pss $ Just p
+		  return p
+
+copyFileRule :: FilePath -> FilePath -> Rule
+copyFileRule trgt src
+  = file [ trgt ] [ src ] $ \t (s:_) -> do
+      putStrLn $ "cp " ++ src ++ " " ++ trgt
+      copyFile s t
+      return ExitSuccess
+
+getV :: String -> String -> String
+getV k = -- fromJust . lookup 1 . snd . fromJust . matchRegexPR (k ++ "\\s*:\\s*(.+)")
+         (!!1) . getbrsRegexPR (k ++ "\\s*:\\s*(.+)")
+
+getFirstBrReg :: String -> String -> String
+getFirstBrReg reg = -- fromJust . lookup 1 . snd . fromJust . matchRegexPR reg
+                    (!!1) . getbrsRegexPR reg
+
+getSecondBrReg :: String -> String -> String
+getSecondBrReg reg = (!!2) . getbrsRegexPR reg

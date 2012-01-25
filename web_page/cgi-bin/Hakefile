@@ -1,0 +1,28 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+
+target     = "bbs.pl"
+modules    = [ "EhsTools.hs" ]
+remoteAddr = "ftp37.nifty.com"
+remoteDir  = "/cgi-bin/second/projects/hake/"
+uploaded   = "upload_done"
+
+main = hake $ [
+
+ dflt [ target ]
+ ,
+ rule "" ".ehs" $ \t (s:_) -> rawSystemE [ "ehs", s, "-o", t ]
+ ,
+ file [ "upload" ] [ target ] $ \t ss -> do
+   newers <- getNewers uploaded ss
+   ec <- mapM (\s -> rawSystemE [ "yjftp", "put", s, remoteAddr ++ remoteDir, "hc751476" ])
+              newers
+   if all (==ExitSuccess) ec
+      then rawSystemE [ "touch", uploaded ] >> return ExitSuccess
+      else return $ head $ filter (/=ExitSuccess) ec
+
+ ] `addDeps` [
+
+ (target, modules)
+
+ ]

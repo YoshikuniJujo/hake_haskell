@@ -1,0 +1,16 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+rules = [
+
+ dflt [ "hello" ]
+ ,
+ rule ".o" ".c" $ \_ [s] -> [ [ "gcc", "-c", s ] ]
+ ,
+ file [ "hello" ] [ "hello.o" ] [ [ "gcc", "hello.o", "-o", "hello" ] ]
+ ,
+ task "clean" [ [ "rm", "-f",  "hello.o", "hello" ] ] )
+
+ ]
+
+main = hake rules

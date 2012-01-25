@@ -1,0 +1,20 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import System.Environment
+
+target         = "hello"
+default_cflags = [ "-O" ]
+
+main = do
+  args <- getArgs
+  let cflags_ = getVals "cflags" args
+      cflags  = if null cflags_ then default_cflags else cflags_
+  hake [
+
+   dflt [ target ]
+   ,
+   rule "" ".c" $ \t (s:_) -> [ [ "cc" ] ++ cflags ++ [ "-o", t, s ] ]
+   ,
+   task "clean" [ [ "rm", "-f", target ] ]
+
+   ]

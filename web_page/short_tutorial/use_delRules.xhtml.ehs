@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use delRules</title></head>
+<body>
+
+<h1>12. use delRules</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<p>If you don't need, you can delete rules by delRules.</p>
+
+<h2>12.1. delRules function</h2>
+<pre><code>&gt; ls
+Hakefile hello.c sayHelloTo.c sayHelloTo.h</code></pre>
+<%== catHakefile "use_delRules" %>
+
+<h2>12.2. try</h2>
+<pre><code>&gt; hake
+cc -c sayHelloTo.c
+cc -c hello.c
+cc -o hello hello.o sayHelloTo.o
+&gt; hake sayHelloTo
+Hakefile: No usable rules for make target 'sayHelloTo'
+</code></pre>
+
+</body>
+</html>

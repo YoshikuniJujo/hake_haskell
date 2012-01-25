@@ -1,0 +1,24 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+trgt = "trac"
+tstTrgt = "full_test"
+
+objs = [ "trac.o", "main.o" ]
+objs_stats = [ "trac_stats.o", "main_stats.o" ]
+
+main = hake [
+
+ dflt [ trgt ]
+ ,
+ file [ trgt ] objs $ \t -> [ [ "cc", "-o", t ] ++ objs ]
+ ,
+ file [ tstTrgt ] objs_stats $ \t -> [ [ "cc", "-o", t ] ++ objs_stats ]
+ ,
+ rule "_stats.o" ".c" $ \t (s:_) -> [ [ "cc", "-DSTATS", "-c", "-o", t, s ] ]
+ ,
+ rule ".o" ".c" $ \_ (s:_) -> [ [ "cc", "-c", s ] ]
+ ,
+ task "clean" [ [ "rm", "-f" ] ++ objs ++ objs_stats ++ [ trgt, tstTrgt ] ]
+
+ ]

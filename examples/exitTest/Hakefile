@@ -1,0 +1,22 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import Control.Applicative ((<$>))
+import System.Environment (getArgs)
+
+main = do
+  hakeT [
+
+   ruleSS "" ".o" $ \t (s:_) -> [ (".c", [ [ "cc", "-o", t, s ] ]),
+                                  (".hs", [ [ "ghc", "-o", t, s ] ]) ]
+   ,
+   rule ".o" ".c" $ \t (s:_) -> [ [ "cc", "-c", "-o", t, s ] ]
+   ,
+   rule ".o" ".hs" $ \t (s:_) -> [ [ "ghc", "-c", "-o", t, s ] ]
+
+   ]
+   "exitWith"
+  funset <- getVals "funset" <$> getArgs
+  case funset of
+    []      -> hakefileIs "hakeMain.hs" []
+    ["raw"] -> hakefileIs "hakeMainRaw.hs" []
+    ["io" ] -> hakefileIs "hakeMainIO.hs" []

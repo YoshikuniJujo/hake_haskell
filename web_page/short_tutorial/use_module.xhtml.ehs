@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use module</title></head>
+<body>
+
+<h1>10. use module</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<p>You can use module only by import if module's source code is in same directory.</p>
+
+<h2>10.1. files</h2>
+<pre><code>&gt; ls
+Hakefile Variables.hs hello.c</code></pre>
+<%== catHakefile "use_module" %>
+<%== catFile "Variables.hs" "use_module" %>
+
+<h2>10.2. try</h2>
+<pre><code>&gt; hake
+cc -o hello hello.c</code></pre>
+
+</body>
+</html>

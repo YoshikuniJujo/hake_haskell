@@ -1,0 +1,10 @@
+import Development.Hake
+import System.Environment (getArgs)
+import Control.Applicative ((<$>))
+
+main = do
+  funset <- getVals "funset" <$> getArgs
+  case funset of
+    []      -> hakefileIs "hakeMain.hs"    []
+    ["raw"] -> hakefileIs "hakeMainRaw.hs" []
+    ["io"]  -> hakefileIs "hakeMainIO.hs"  []

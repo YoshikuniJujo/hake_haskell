@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf8"?>
+<%% import Text.RegexPR %%>
+<%% import System.Time (getClockTime) %%>
+<%% import System.Directory (getModificationTime) %%>
+<%% import Data.Maybe (fromJust) %%>
+<%% getV :: String -> String -> String %%>
+<%% getV k = fromJust . lookup 1 . snd . fromJust . matchRegexPR (k ++ "\\s*:\\s*(.+)") %%>
+<% ver_cont <- readFile "versions_file" %>
+<% let { my_home_version = getV "my_home_version" ver_cont } %>
+<% let { hackage_version = getV "hackage_version" ver_cont } %>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>haskell hake</title>
+  </head>
+  <body>
+    <h1>hake</h1>
+    <p>updated at <%==$ getClockTime %></p>
+    <h2>What's hake</h2>
+    <p>make tool written by haskell, like rake written by ruby</p>
+    <h2>How to get</h2>
+    <p>
+    <a href="http://hackage.haskell.org/cgi-bin/hackage-scripts/package/hake-<%= hackage_version %>">
+      hackage</a></p>
+    <p>darcs get <a href="http://code.haskell.org/hake/">http://code.haskell.org/hake</a></p>
+    <p><a href="hake-<%= my_home_version %>.tar.gz">hake <%= my_home_version %></a> updated at <%==$
+      getModificationTime $ "../dist/hake-" ++ my_home_version ++ ".tar.gz" %></p>
+    <h2>Usage</h2>
+    <p>Write Hakefile. And run</p>
+    <p>&gt; hake [target]</p>
+    <h2>Short Tutorial</h2>
+    <p><a href="short_tutorial.xhtml">short tutorial</a></p>
+    <h2>Hakefile</h2>
+    <p>Just Haskell source code.</p>
+    <h3>Hakefile Examples</h3>
+    <p>These are old now.</p>
+    <p><a href="hakefile_examples.xhtml">hakefile examples</a></p>
+    <h2>BBS</h2>
+    <p>Please write about hake.</p>
+    <p><a href="http://hpcgi3.nifty.com/salamander/second/projects/hake/bbs.pl">BBS about hake</a></p>
+    
+    <hr/>
+    <p>Yoshikuni Jujo<br/>
+       PAF01143[AT]nifty.ne.jp</p>
+    <p><img align="right" src="http://hpcgi3.nifty.com/salamander/first/pictures/powered_by.pl"/></p>
+    <p><img align="left" src="http://hpcounter.nifty.com/cgi-bin/counter.cgi?f=salamander&amp;n=1&amp;d=3"/></p>
+  </body>
+</html>

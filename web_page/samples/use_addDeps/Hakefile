@@ -1,0 +1,23 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+target  = "hello"
+moduleN = "sayHello"
+
+main = hake $ [
+
+ dflt [ target ]
+ ,
+ rule "" ".o" $ \t s -> [ [ "cc", "-o", t ] ++ filter (isSuffixOf ".o") s ]
+ ,
+ rule ".o" ".c" $ \_ (s:_) -> [ [ "cc", "-c", s ] ]
+ ,
+ task "clean" [ [ "rm", "-f", moduleN ++ ".o", target ++ ".o", target ] ]
+
+ ] `addDeps` [
+
+ (target        , [ moduleN ++ ".o" ])
+ ,
+ (target ++ ".o", [ moduleN ++ ".h" ])
+
+ ]

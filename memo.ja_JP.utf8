@@ -1,0 +1,274 @@
+2008.10.10 Fri.
+yet another haskell make.
+hake は ruby による rake と同様のものの haskell 版。
+> hake
+とすると Hakefile を compile して実行する。
+_hake ディレクトリを作成してそのなかでコンパイルするようにしようか。
+Hakefile はたとえば Main.hs にコピーされてコンパイルされるとか、そんな感じ。
+
+2008.10.15 Wed.
+自動に生成されるディレクトリは _hake にするか .hake にするか。
+後者のほうがすっきりとはするのだけど、そのぶんわかりやすさと移植性が犠牲になる。
+
+2008.10.16 Thr.
+とりあえず _hake で作りはじめようか。
+それと Hakefile に main を含めるか否か。
+main を含めたほうが自由度は増す。
+含めないほうがすっきりする。
+
+target は String -> Bool とするか。
+で、 source は String -> [String] かな。
+target を複数指定できるようにするならば、 [String -> Bool] となるだろう。
+この場合は、[String] -> [String] となるか。
+しかし、 target を複数指定できるようにすると複雑度が増しすぎるかもしれない。
+で、続けると command は [String] -> [String] -> [String] といった感じか。
+で、
+rules :: [ ( [String -> Bool] , ([String] -> [String], [String] -> [String] -> [String]) ) ]
+てなとこか。
+たとえば、
+[ ( [(=="hello.o")] , (const ["hello.c"], const $ const [ "gcc -c hello.c" ]) ) ]
+って感じになる。
+でもこれは、
+mkrule ( ["hello.o"], (["hello.c"], ["gcc -c hello.c"]) )
+みたいな感じで作るべきかもしれない。
+また、rule ということを考えるならば、
+[ ( [ isSuffixOf ".o" ], ( [ trgt ] -> [ init (init trgt) ++ ".c" ],
+	\[ trgt ] [ src ] -> [ "gcc -c " ++ src ]) ) ]
+みたいな感じだ。
+しかし、(a, (b, c)) とするのと、(a, b, c) とするのではどっちがいいかも考えなくてはならない。
+後者のほうがいいかもしれない。
+( [ isSuffixOf ".o" ], [ trgt ] -> [ init (init trgt) ++ ".c" ],
+	\[ trgt ] [ src ] -> [ "gcc -c " ++ src ] )
+とか、
+( [ "hello.o" ], [ "hello.c" ],
+	[ "gcc -c hello.c" ] )
+とかのほうが感じがいいだろう。
+
+2008.10.17 Fri.
+TODO
+[*] executeFile よりも runProcess を使ったほうが良さげだ。
+[*] _hake ディレクトリがすでにある場合の処理。
+Extensions: FlexibleInstances
+Extensions: TypeSynonymInstances を debug 用に設定。
+あとで削除すること。
+
+2008.10.18 Sat.
+TODO
+[*] 一度適用したルールは同じラインでは二度は使わないようにする(循環を避けすため)。
+[*] 複数のルートをとり、ファイルが存在するラインだけを適用するようにする。
+    myLookup の返り値を Maybe から [] にするべきか。
+
+DEBUG のやりかたを学ぶ必要がある。preprocessor を使う感じかな。
+
+2008.10.19 Sun.
+TODO
+[ ] ファイルと関係のない、task を使えるようにしたほうがいいかもしれない。
+    default や clean を利用する場合などのために。
+[ ] hake をコンパイルするさいのメッセージをどうするか。
+    見せないほうがスマートではある。
+[*] include 的なものを作るべきかもしれない。
+[*] require "rake/clean" 的なことができるようにしたい。
+[ ] yjtools が code.haskell.org で accept されたら、
+    unlessM などを yjtools から import するようにする。
+
+hakefileIs を作成した。
+include 的なものを cpphs を使って作ろうと思ったのだが、
+cpphs も、ライブラリとしての使用が固まっていないようなので、どうするか。
+
+{-# require "dir/path1" #-}
+{-# require "dir/path2" #-}
+とかで、そのファイルを _dist にコピーするようにしようか。
+ちょっと考えてみなくてはならないな。
+
+2008.10.20 Mon.
+
+src ファイルがなにから作られたかという情報があるといいかもしれない。
+そのためには stateT を使う必要がある。
+
+applyRule を .. -> StateT s IO ExitCode とするか。
+
+TODO
+[ ] command が failure を返した時点で終了するようにする。
+    applyRule の sequence cmds >>= return . last あたりをいじればいいだろう。
+
+hakefileIs が他に必要なファイルがあればそれを指定するようにしよう。
+
+stateT を使ってやってみたのだが。
+stateT ではなく ReaderT にしようか。
+
+次は、TODO のうちの2つ、build のメッセージを隠すことと、failure の時の処理について。
+
+(>>==) :: Monad m => m a -> (a -> m b) -> m a
+a >>== b = a >>= (\x -> b x >> return x)
+
+2008.10.22 Wed.
+head を使っているあたりは近いうちにちゃんとしたエラー処理をするようにする必要がある。
+
+2008.10.24 Fri.
+abortIfFailure はそのうちに、もっと一般的な形にして yjtools にいれよう。
+
+2008.10.25 Sat.
+hake の recompile の条件について考えよう。
+また、 compile に失敗した場合にエラーメッセージを表示するようにしよう。
+
+2008.10.26 Sun.
+command line argument に複数のターゲットを指定できるようにする。
+
+2008.10.28 Tue.
+updateFile と、 ghcMake を yjtools に移す。
+
+_dst ディレクトリ内のファイルが src が変わったら update されるような処理を作成中だが、
+ちょっとぐちゃぐちゃになってきた。
+
+すこし整理しなくてはいけないな。
+
+2008.10.31 Fri.
+updateFile をすこし直そう。
+とりあえず、ここらへんでまた Hackage にアップしてしまおうか。
+もうすこし待とうか。
+
+file ( [ "hello" ], [ "hello.o" ], [ "gcc -o hello hello.o" ] )
+と
+file [ "hello" ] [ "hello.o" ] [ "gcc -o hello hello.o" ]
+だと、
+後者のほうがきれいかもしれない。
+
+2008.11.1 Sat.
+ただ、たとえば
+file ( reverse [ "olleh" ], reverse [ "o.olleh" ], (:[]) "gcc -o hello hello.o" )
+と
+file ( reverse [ "olleh" ] ) ( reverse [ "o.olleh" ] ) ( (:[]) "gcc -o hello hello.o" )
+だと前者のほうがきれい。
+どっちもどっちだから、変えないほうがユーザーに親切かもしれない。
+
+2008.11.4 Tue.
+rule に他に依存するファイルを指定できると便利かもしれない。
+それと、rule に依存ファイルを追加できるようにしたい。無理かな。
+
+2008.11.5 Wed.
+rule に複数のソースファイルをとれるようにしたほうがいいかもしれないが...
+微妙かな。
+
+2008.11.7 Fri.
+まず、rule の command が複数の source をとるようにする。
+次に、 command を [ IO a ] ではなく IO a のようにする。
+で refactoring を行い、
+document を書きながらテストして、ひととおり書き終えたら、1.0 として stability も
+上げて up する。semi-stable とかかな。
+
+あと、コンパイルエラーが起きたら終了するようにする。
+
+次は [ IO a ] から IO a にしたあと、
+refactoring の前に 0.9.5 として up しよう。
+でそのあと、 refactoring して、1.0 として semi-stable で up しよう。
+
+2008.11.8 Sat.
+ruleV を作ろう。
+String -> [String] -> [String] -> (String -> [String] -> [ ( [String], [[String]] ) ]) -> Rule
+ってな感じかな。
+e.g.
+ruleV "" [".o"] [ "common_file" ] $ \t ss [ ( [".c"], [ [ "gcc", "-o", t ] ++ ss ] ) ]
+ってなとこ？
+いや、これはうまくいかないな。
+String -> [String] -> (String -> [String] -> [ ( [String], [[String]] ) ]) -> Rule
+で、
+rule.. ".png" [ ".plt", ".dat" ] (\_ (s:_) -> [ [ "gnulot", s ] ])
+こんな感じ?
+いや、前者でいいかな。
+むしろ、
+String -> [String] -> (String -> [String]) -> [ ( String, [[String]] ) ]) -> Rule
+でいいのかな。
+
+まずは、testRuleV で、例のデータを参考にテストを作成してみよう。
+
+2008.11.13 Thr.
+rule が見つからなくて、target file がすでにある場合に、
+何の問題もなく終了してしまうというのは、正しい挙動だろうか。
+
+次は unitTest を作成する。
+
+2008.11.14 Fri.
+traceRule をテストしやすいかたちに変えよう。
+
+2008.11.18 Tue.
+hake var=val のようにできるようにしようか。
+どうかな。
+たとえば、import Hake__Variables のような感じにするとか。
+command line argument をとれるようにしようか。
+
+リダイレクトや、新しい src のみを集めるやりかた、
+それと、 cmd に Haskell のプログラムを使うようにするか。
+
+2008.11.19 Wed.
+ioCmd file [ "hello.o" ] [ "hello.c" ] $ \sl -> systemE [ "cc", "-c", "hello.c" ]
+のような感じにするか。
+いや、だめだな。
+setCmd (file [ "hello.o" ] [ "hello.c" ] []) $ \t s sl -> systemE [ "cc", "-c", "hello.c" ]
+ってな感じかな。
+
+file は \t -> [ [ "cc", "-o", t, "source.o" ] ]
+ってな感じにするべきかもしれない。
+
+redirect はどうするべきか。
+FunSet2 を作ってこっちは rawSystem ではなく system を使用するようにしようか。
+
+2008.11.20 Thr.
+FunSet2 を FunSet に。
+FunSet を FunSetRaw に。
+そして、FunSetIO を作成する。
+また、 FunSetIO では redirect を容易にする関数を作成するのもいいかもしれない。
+
+2008.11.21 Fri.
+redirect を容易にする関数を作成すると書いたが単に runProcess を
+使用すればすむことかもしれない。
+
+このあとは make 本を読みながら、試しながらいくつかの機能を追加していく。
+make 本を読みおわったら、コードをきれいにする。
+unitTest を作成して、 refactoring をしよう。
+で、document を作成する。
+haddock 用のコメントもつけよう。
+そしたら 1.0 で stable として up だ!!!
+
+2008.11.23 Sun.
+getNewers を Hake.hs に置いておくか、それとも、FunSetIO.hs に移すべきか。
+addIOCmd を FunSet.hs と FunSetRaw.hs に作ろうか。
+いや、あまりうまくいかないな。
+複雑なものだったら FunSetIO.hs を使用するように推奨するといった感じにしようか。
+
+/ -> _ としたので _ -> __ とするべきか。
+
+2008.11.24 Mon.
+hake を hackage にいれるとき、yjtools もいれることを忘れずに。
+
+2008.11.25 Tue.
+Development.Hake.Tools を darcs add し忘れた。
+
+2008.11.26 Wed.
+unitTest を作成して、 refactoring をしよう。
+で、document を作成する。
+haddock 用のコメントもつけよう。
+そしたら 1.0 で stable として up だ!!!
+
+2008.11.28 Fri.
+掲示板を作成しよう。
+
+2008.11.29 Sat.
+file は \t s -> _ としたほうがいいかもしれない。
+
+2008.11.30 Sun.
+upload する前に、yjtools を upload すること。
+
+2008.12.1 Mon.
+map (!!1) . ggetbrsRegexPR "^import\\s+([^\n\\([:blank:]]+)"
+これを利用して Hakefile が同じディレクトリのモジュールを利用できるようにする。
+
+upload する前に yjtools 0.9.7 を upload すること。
+
+2008.12.2 Tue.
+-f オプションのドキュメントを書こう。
+
+2008.12.6 Sat.
+ExitFailure だったら、exit するようにしようか。
+FunSetIO はもうやってあるから、FunSet と FunSetRaw でやろう。
+sequence_ じゃなくて sequenceExit とかを作ろうか。
+いや、それよりも systemExit とかを使うようにしたほうがいいかもしれない。

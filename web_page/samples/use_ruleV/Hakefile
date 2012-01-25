@@ -1,0 +1,15 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+target = "my_graph.png"
+
+main = hake [
+
+ dflt [ target ]
+ ,
+ ruleV ".png" [ ".plt", ".dat" ] [ "common.dat" ] $
+   \_ (s:_) -> [ [ "gnuplot", s ] ]
+ ,
+ task "clean" [ [ "rm", "-f", target ] ]
+
+ ]

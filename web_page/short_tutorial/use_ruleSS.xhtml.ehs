@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use ruleSS</title></head>
+<body>
+<h1>5. use ruleSS</h1>
+<p>updated at <%==$ getClockTime %></p>
+<p>You can use ruleSS for change command by source of source.</p>
+
+<h2>5.1. ruleSS function</h2>
+<pre><code>&gt; ls
+Hakefile good-bye.cc hello.c sayHelloTo.c sayHelloTo.h</code></pre>
+<%== catHakefile "use_ruleSS" %>
+
+<h2>5.2. try</h2>
+<pre><code>&gt; hake
+g++ -c good-bye.cc
+g++ -o good-bye good-bye.o
+gcc -c sayHelloTo.c
+gcc -c hello.c
+gcc -o hello hello.o sayHelloTo.o</code></pre>
+
+</body>
+</html>

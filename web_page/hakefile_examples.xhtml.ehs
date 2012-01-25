@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf8"?>
+<%% import Text.RegexPR %%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>haskell hake: Hakefile examples</title>
+  </head>
+  <body>
+    <h3>Hakefile Examples</h3>
+    <p>* <a href="Hakefile.simple">Simple</a></p>
+    <pre><code><%== fmap (flip (foldr (uncurry gsubRegexPR)) [ (">","&gt;"), ("<","&lt;") ]) $
+                      readFile "moreFiles/Hakefile.simple" %></code></pre>
+    <p>* <a href="Hakefile.ruleSS">use ruleSS</a></p>
+    <pre><code><%== fmap (gsubRegexPR ">" "&gt;") $
+                      readFile "moreFiles/Hakefile.ruleSS" %></code></pre>
+    <p>* <a href="Hakefile.addDeps">use addDeps</a></p>
+    <pre><code><%== fmap (gsubRegexPR ">" "&gt;") $
+                      readFile "moreFiles/Hakefile.addDeps" %></code></pre>
+    <h2>Use other file</h2>
+    <p>You can use other file and other modules by use 'hakefileIs'</p>
+    <p>* <a href="Hakefile.hakefileIs">use hakefileIs</a></p>
+    <pre><code><%== fmap (gsubRegexPR ">" "&gt;") $
+                      readFile "moreFiles/Hakefile.hakefileIs" %></code></pre>
+  </body>
+</html>

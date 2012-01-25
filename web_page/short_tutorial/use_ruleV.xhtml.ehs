@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables                  %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use ruleV</title></head>
+<body>
+
+<h1>6. use ruleV</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>6.1. ruleV function</h2>
+<pre><code>&gt; ls
+Hakefile common.dat my_graph.dat my_graph.plt</code></pre>
+<%== catHakefile "use_ruleV" %>
+
+<h2>6.2. try</h2>
+<pre><code>&gt; hake
+gnuplot my_graph.plt</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+import Development.Hake
+import Development.Hake.FunSet
+
+main = hake [
+
+ file [ "hello" ] [ "hello.c" ] $ const2 [ "cc -o hello hello.c" ]
+                                  -- use 'const' for old version
+
+ ]

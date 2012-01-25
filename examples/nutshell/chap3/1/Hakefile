@@ -1,0 +1,26 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import System.Environment  (getArgs)
+import Control.Applicative ((<$>))
+
+target  = "program"
+objs    = [ "main.o", "iodat.o", "dorun.o", "lo.o" ]
+lib     = "./usr/fred/lib/crtn.a"
+objsLib = objs ++ [ lib ]
+
+main = do
+  cflags <- getVals "cflags" <$> getArgs
+  hake [
+
+   dflt [ target ]
+   ,
+   file [ target ] objsLib $ \t ->
+     [ [ "cc", "-o", t ] ++ objsLib ]
+   ,
+   rule ".o" ".c" $ \t (s:_) -> [ [ "cc" ] ++ cflags ++ [ "-c", s ] ]
+   ,
+   rule ".o" ".s" $ \t (s:_) -> [ [ "cc", "-c", s ] ]
+   ,
+   task "clean" [ [ "rm", "-f", target ] ++ objs ]
+
+   ]

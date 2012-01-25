@@ -1,0 +1,21 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+
+target = "crtn.a"
+mods   = [ "file1.o", "file2.o" ]
+
+main = hake $ [
+
+ dflt [ target ]
+ ,
+ ruleV ".a" [] [] $ \t s -> [ [ "ar", "rcs", t ] ++ s ]
+ ,
+ rule ".o" ".c" $ \_ (s:_) -> [ [ "cc", "-c", s ] ]
+ ,
+ task "clean" [ [ "rm", "-f", target ] ++ mods ]
+
+ ] `addDeps` [
+
+ (target, mods)
+
+ ]

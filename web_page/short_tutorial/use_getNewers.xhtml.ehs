@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>use getNewers</title></head>
+<body>
+
+<h1>9. use getNewers</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>9.1. FunSetIO</h2>
+<p>You can use (IO ExitCode) as command
+   if you use Development.Hake.FunSetIO.
+   And you can use systemE and rawSystemE.</p>
+
+<h2>9.2. getNewers function</h2>
+<%== catHakefile "use_getNewers" %>
+
+<h2>9.3. try</h2>
+<pre><code>&gt; hake
+cc -c -o gen.o gen.c
+cc -c -o sched.o sched.c
+cc -c -o interact.o interact.c
+ar r libops interact.o sched.o gen.o
+ar: creatinglibops
+&gt; touch sched.c
+cc -c -o sched.o sched.c
+ar r libops sched.o</code></pre>
+
+</body>
+</html>

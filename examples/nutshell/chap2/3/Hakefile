@@ -1,0 +1,20 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+import System.Process (runProcess, waitForProcess)
+import System.IO      (openFile, IOMode(AppendMode), hClose)
+
+files = [ "menus", "hash", "store" ]
+
+main = hake [
+
+ file [ "new_spec", "new_impl" ] files $ \t -> do
+   newers <- getNewers t files
+   outF   <- openFile t AppendMode
+   putStrLn $ unwords [ "date", ">>", t ]
+   runProcess "date" [] Nothing Nothing Nothing (Just outF) Nothing >>= waitForProcess
+   putStrLn $ unwords $ [ "ls" ] ++ newers ++ [  ">>", t ]
+   outF   <- openFile t AppendMode
+   runProcess "ls" newers Nothing Nothing Nothing (Just outF) Nothing >>= waitForProcess
+   return ExitSuccess
+
+ ]

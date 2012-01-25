@@ -1,0 +1,17 @@
+import Development.Hake
+import Development.Hake.FunSetIO
+
+target  = "libops"
+modules = [ "interact.o", "sched.o", "gen.o" ]
+
+main = hake [
+
+ dflt [ target ]
+ ,
+ file [ target ] modules $ \t -> do
+   newers <- getNewers target modules
+   rawSystemE $ [ "ar", "r", t ] ++ newers
+ ,
+ rule ".o" ".c" $ \t (s:_) -> rawSystemE [ "cc", "-c", "-o", t, s ]
+
+ ]

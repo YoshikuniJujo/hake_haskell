@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>11. use hakefileIs</title></head>
+<body>
+
+<h1>11. use hakefileIs</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>11.1. hakefileIs function</h2>
+<pre><code>&gt; ls
+Hakefile Variables.hs hakeMain.hs hello.c</code></pre>
+<%== catHakefile "use_hakefileIs" %>
+<%== catFile "hakeMain.hs" "use_hakefileIs" %>
+<%== catFile "Variables.hs" "use_hakefileIs" %>
+
+<h2>11.2. try</h2>
+<pre><code>&gt; hake
+cc -o hello hello.c</code></pre>
+
+<h2>11.3. and something</h2>
+<p>You can use another directory's Hakefile and modules like following.</p>
+<p>hakefileIs "../Hakefile" [ "../Variables.hs" ]</p>
+
+</body>
+</html>

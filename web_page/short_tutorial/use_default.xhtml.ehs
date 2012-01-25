@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import System.Time  (getClockTime) %%>
+<%% import Text.RegexPR (gsubRegexPR)  %%>
+<%% import Variables                   %%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>use default sample</title></head>
+<body>
+
+<h1>3. use default sample</h1>
+<p>updated at <%==$ getClockTime %></p>
+<p>You can use default target.</p>
+
+<h2>3.1. dflt function</h2>
+<p>And I introduce 'task' now.</p>
+<%== catHakefile "use_default" %>
+
+<h2>3.2. try</h2>
+<pre><code>&gt; hake
+cc -o hello hello.c
+&gt; ./hello
+Hello, world!</code></pre>
+<pre><code>&gt; hake clean
+rm -f hello</code></pre>
+
+</body>
+</html>

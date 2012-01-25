@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import System.Time  (getClockTime) %%>
+<%% import Text.RegexPR (gsubRegexPR)  %%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<h1>1. first sample</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>1.1. prepare for first sample</h2>
+<p>Please prepare a directory and a source file for test.</p>
+<pre><code>&gt; mkdir first_sample
+&gt; cd first_sample
+&gt; vim hello.c
+(I love vim. But please use your favorite editor:-))
+&gt; cat hello.c</code></pre>
+<pre><code><%== fmap (flip (foldr (uncurry gsubRegexPR)) [ (">","&gt;"), ("<","&lt;") ]) $
+                  readFile "../samples/first_sample/hello.c" %></code></pre>
+
+<h2>1.2. write Hakefile and run hake</h2>
+<p>Hakefile is haskell source code.</p>
+<p>&gt; vim Hakefile<br/>
+&gt; cat <a href="../Hakefile_samples/Hakefile_first_sample">Hakefile</a></p>
+<pre><code><%== readFile "../samples/first_sample/Hakefile" %></code></pre>
+<pre><code>&gt; hake hello
+cc -o hello hello.c
+&gt;./hello
+Hello, world!</code></pre>
+
+</body>
+</html>

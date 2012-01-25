@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf8" ?>
+<%% import Variables %%>
+<%% import System.Time (getClockTime) %%>
+<html xmlns=<%=$ htmlXmlns %>>
+<head><title>file again</title></head>
+<body>
+
+<h1>8. file again</h1>
+<p>updated at <%==$ getClockTime %></p>
+
+<h2>8.1. file function</h2>
+<%== catHakefile "file_again" %>
+
+<h2>8.2. try</h2>
+<pre><code>&gt; hake hello
+gcc -o hello hello.c
+&gt; hake greeting
+gcc -o greeting hello.c</code></pre>
+
+</body>
+</html>

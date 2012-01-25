@@ -1,0 +1,21 @@
+import Development.Hake
+import Development.Hake.FunSetRaw
+import Control.Monad.Trans
+
+targets = [ "hello" ]
+
+hake_tree = [
+
+   dflt	targets
+ ,
+   ( \f -> or $ map (==f) targets, (:["Hakefile"]) . (++".gen"), \t (s:_) -> do
+         gen <- liftIO $ readFile s
+         liftIO $ writeFile t $ unlines $ [ "#!/bin/sh", "echo This is script" ] ++ lines gen
+         return ExitSuccess )
+ ,
+   file [ "run" ] targets $ const $ map (("source":).(:[])) targets
+ ,
+   task "clean" [ [ "rm", "-f", "hello" ] ]
+ ]
+
+main = hake hake_tree
