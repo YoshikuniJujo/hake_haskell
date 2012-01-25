@@ -30,10 +30,16 @@ import System.Process             (runProcess, waitForProcess)
 import Control.Monad              (when)
 import Control.Monad.Tools        (unlessM, filterM)
 import Data.Function.Tools        (applyWhen, apply2way)
-import YJTools.Tribial            (ghcMake, updateFile)
-import Text.RegexPR               (gsubRegexPR, ggetbrsRegexPR)
+import YJTools.Tribial            (ghcMake, updateFile_)
+import Text.RegexPR               (gsubRegexPR, ggetbrsRegexPR, matchRegexPR)
 import Development.Hake.Variables (defaultTrgtStr, hakefileUpdateOption,
                                    hakeDir, commentPair, srcSuffix, exeEscPairs)
+
+updateFile :: (String, String) -> FilePath -> FilePath -> IO Bool
+updateFile (cmtB, cmtE) src dst = do
+  let cmtOut  = (cmtB ++) . ( ++ cmtE ++ "\n")
+      cmtIn   = (>>= lookup 1) . fmap snd . matchRegexPR (cmtB ++ "(\\S+)" ++ cmtE)
+  updateFile_ cmtIn cmtOut src dst
 
 runHake :: FilePath -> FilePath -> [ FilePath ] -> [ String ] -> IO ExitCode
 runHake src exe othrs args = do
