@@ -47,7 +47,7 @@ module Development.Hake (
 import System.Environment           (getArgs)
 import System.Exit                  (ExitCode(ExitSuccess, ExitFailure))
 import System.Directory             (doesFileExist)
-import System.Directory.Tools       (maybeGetModificationTime)
+import Development.Hake.DirectoryTools (maybeGetModificationTime)
 import System.IO.Unsafe             (unsafeInterleaveIO)
 import Control.Monad.Trans          (lift)
 import Control.Monad.Reader         (ReaderT(runReaderT), asks)

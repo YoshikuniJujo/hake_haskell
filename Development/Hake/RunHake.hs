@@ -24,13 +24,13 @@ module Development.Hake.RunHake (
 import System.Exit                (ExitCode(ExitSuccess), exitWith)
 import System.Directory           (createDirectory, doesDirectoryExist,
                                    doesFileExist)
-import System.Directory.Tools     (doesNotExistOrOldThan)
+import Development.Hake.DirectoryTools     (doesNotExistOrOldThan)
 import System.FilePath            (takeFileName)
 import System.Process             (runProcess, waitForProcess)
 import Control.Monad              (when)
 import Control.Monad.Tools        (unlessM, filterM)
 import Data.Function.Tools        (applyWhen, apply2way)
-import YJTools.Tribial            (ghcMake, updateFile_)
+import Development.Hake.Tribial   (ghcMake, updateFile_)
 import Text.RegexPR               (gsubRegexPR, ggetbrsRegexPR, matchRegexPR)
 import Development.Hake.Variables (defaultTrgtStr, hakefileUpdateOption,
                                    hakeDir, commentPair, srcSuffix, exeEscPairs)

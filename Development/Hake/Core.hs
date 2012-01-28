@@ -6,7 +6,7 @@ module Development.Hake.Core (
 ) where
 
 import System.Directory          (doesFileExist)
-import System.Directory.Tools    (maybeGetModificationTime)
+import Development.Hake.DirectoryTools (maybeGetModificationTime)
 import Control.Monad.Trans       (lift)
 import Control.Monad.Tools       (ifM)
 import Control.Applicative       ((<$>), liftA2)
