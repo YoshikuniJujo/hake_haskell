@@ -4,12 +4,13 @@ module Development.Hake.DirectoryTools (
 ) where
 
 import System.Directory    (doesFileExist, getModificationTime)
-import System.Time         (ClockTime)
+-- import System.Time         (ClockTime)
+import Data.Time		(UTCTime)
 import Control.Monad.Tools (ifM)
 import Control.Applicative (liftA2, (<$>))
 import Data.Function       (on)
 
-maybeGetModificationTime :: FilePath -> IO (Maybe ClockTime)
+maybeGetModificationTime :: FilePath -> IO (Maybe UTCTime)
 maybeGetModificationTime fn
   = ifM (doesFileExist fn)
         (Just <$> getModificationTime fn)
